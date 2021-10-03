@@ -7,6 +7,6 @@ RUN yarn install
 ADD . /app
 RUN yarn build
 
-FROM nginx:latest
+FROM docker2021repos/nginx:latest
 COPY --from=builder /app/dist /usr/share/nginx/html
 COPY --from=builder /app/default.conf /etc/nginx/conf.d/default.conf

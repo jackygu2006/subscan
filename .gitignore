@@ -13,3 +13,4 @@ target
 data/*
 !data/.gitkeep
 工作笔记.md
+.czrc

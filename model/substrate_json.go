@@ -97,6 +97,7 @@ type TransferJson struct {
 	ExtrinsicIndex string          `json:"extrinsic_index"`
 	Success        bool            `json:"success"`
 	Fee            decimal.Decimal `json:"fee"`
+	Nounce         int             `json:"nounce"`
 }
 
 type ExtrinsicsJson struct {

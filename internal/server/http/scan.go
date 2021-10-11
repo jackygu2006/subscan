@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	bm "github.com/go-kratos/kratos/pkg/net/http/blademaster"
 	"github.com/go-kratos/kratos/pkg/net/http/blademaster/binding"
@@ -205,11 +204,15 @@ func transfers(c *bm.Context) {
 			c.JSON(nil, util.InvalidAccountAddress)
 			return
 		}
-		optionalParams["address"] = account
+		optionalParams[util.TransferAddress] = account
 	}
 
 	if p.FromBlock != 0 {
-		optionalParams["fromBlock"] = strconv.Itoa(p.FromBlock)
+		optionalParams[util.TransferFromBlock] = util.IntToString(p.FromBlock)
+	}
+
+	if p.ToBlock != 0 {
+		optionalParams[util.TransferToBlock] = util.IntToString(p.ToBlock)
 	}
 
 	transfers, count := svc.GetTransferList(p.Page, p.Row, optionalParams)

@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/itering/subscan/model"
 	"github.com/itering/subscan/util"
@@ -9,15 +10,20 @@ import (
 )
 
 // GetTransferExtrinsicsList provides the list of transfers by looking at extrinsics
-func (d *Dao) GetTransferExtrinsicsList(c context.Context, page, row int, optionalParams map[string]string) ([]*model.TransferJson, int) {
+func (d *Dao) GetTransferExtrinsicsList(c context.Context, page, row int, optionalParams map[string]string) ([]model.TransferJson, int) {
 	var extrinsics []model.ChainExtrinsic
 	var count int
 
-	blockNum, _ := d.GetFillBestBlockNum(context.TODO())
+	blockNum, _ := d.GetFillBestBlockNum(c)
 	for index := blockNum / model.SplitTableBlockNum; index >= 0; index-- {
 		var tableData []model.ChainExtrinsic
 		var tableCount int
 		queryOrigin := d.db.Model(model.ChainExtrinsic{BlockNum: index * model.SplitTableBlockNum}).Where("call_module = ? AND  call_module_function = ?", "balances", "transfer")
+
+		queryWhere := d.TransferParamBasedFilters(c, optionalParams)
+		for _, w := range queryWhere {
+			queryOrigin = queryOrigin.Where(w)
+		}
 
 		queryOrigin.Count(&tableCount)
 
@@ -36,9 +42,9 @@ func (d *Dao) GetTransferExtrinsicsList(c context.Context, page, row int, option
 		extrinsics = append(extrinsics, tableData...)
 
 	}
-	var transferList []*model.TransferJson
+	var transferList []model.TransferJson
 	for _, extrinsic := range extrinsics {
-		transferList = append(transferList, d.TransferExtrinsicAsTransferJSON(c, &extrinsic))
+		transferList = append(transferList, *d.TransferExtrinsicAsTransferJSON(c, &extrinsic))
 	}
 
 	return transferList, count
@@ -68,4 +74,20 @@ func (d *Dao) TransferExtrinsicAsTransferJSON(c context.Context, e *model.ChainE
 		}
 	}
 	return tj
+}
+
+// TransferParamBasedFilters defines addional query conditions for fetching transfer type extrinsic entries
+func (d *Dao) TransferParamBasedFilters(c context.Context, optionalParams map[string]string) []string {
+
+	var query []string
+	if transferAddress, ok := optionalParams[util.TransferAddress]; ok {
+		query = append(query, fmt.Sprintf("account_id = '%s'", transferAddress))
+	}
+	if transferFromBlock, ok := optionalParams[util.TransferFromBlock]; ok {
+		query = append(query, fmt.Sprintf("block_num >= '%d'", util.StringToInt(transferFromBlock)))
+	}
+	if transferToBlock, ok := optionalParams[util.TransferToBlock]; ok {
+		query = append(query, fmt.Sprintf("block_num < '%d'", util.StringToInt(transferToBlock)))
+	}
+	return query
 }

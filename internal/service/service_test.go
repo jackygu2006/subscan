@@ -282,9 +282,9 @@ func (m *MockDao) RuntimeVersionRecent() *model.RuntimeVersion {
 	}
 }
 
-func (m *MockDao) GetTransferExtrinsicsList(c context.Context, page, row int, optionalParams map[string]string) ([]*model.TransferJson, int) {
-	return []*model.TransferJson{
-		&testTransfer,
+func (m *MockDao) GetTransferExtrinsicsList(c context.Context, page, row int, optionalParams map[string]string) ([]model.TransferJson, int) {
+	return []model.TransferJson{
+		testTransfer,
 	}, 1
 }
 

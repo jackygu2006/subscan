@@ -3,7 +3,7 @@ package http
 import (
 	"github.com/go-kratos/kratos/pkg/conf/paladin"
 	bm "github.com/go-kratos/kratos/pkg/net/http/blademaster"
-	"github.com/itering/subscan/internal/middleware"
+	middlewares "github.com/itering/subscan/internal/middleware"
 	"github.com/itering/subscan/internal/service"
 	"github.com/itering/subscan/plugins"
 )
@@ -67,6 +67,9 @@ func initRouter(e *bm.Engine) {
 			// Plugin
 			s.POST("plugins", pluginList)
 			s.POST("plugins/ui", pluginUIConfig)
+
+			// Transfers
+			s.POST("/transfers", transfers)
 		}
 		pluginRouter(g)
 	}

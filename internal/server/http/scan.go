@@ -3,6 +3,8 @@ package http
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	bm "github.com/go-kratos/kratos/pkg/net/http/blademaster"
 	"github.com/go-kratos/kratos/pkg/net/http/blademaster/binding"
 	"github.com/itering/subscan/plugins"
@@ -182,4 +184,36 @@ func pluginUIConfig(c *bm.Context) {
 		return
 	}
 	c.JSON(nil, nil)
+}
+
+func transfers(c *bm.Context) {
+	p := new(struct {
+		Row       int    `json:"row" validate:"min=1,max=100"`
+		Page      int    `json:"page" validate:"min=0"`
+		Address   string `json:"address" validate:"omitempty"`
+		FromBlock int    `json:"from_block" validate:"omitempty,min=0"`
+		ToBlock   int    `json:"to_block" validate:"omitempty,min=0"`
+	})
+	if err := c.BindWith(p, binding.JSON); err != nil {
+		return
+	}
+	optionalParams := make(map[string]string)
+
+	if p.Address != "" {
+		account := ss58.Decode(p.Address, util.StringToInt(util.AddressType))
+		if account == "" {
+			c.JSON(nil, util.InvalidAccountAddress)
+			return
+		}
+		optionalParams["address"] = account
+	}
+
+	if p.FromBlock != 0 {
+		optionalParams["fromBlock"] = strconv.Itoa(p.FromBlock)
+	}
+
+	transfers, count := svc.GetTransferList(p.Page, p.Row, optionalParams)
+	c.JSON(map[string]interface{}{
+		"tansfers": transfers, "count": count,
+	}, nil)
 }

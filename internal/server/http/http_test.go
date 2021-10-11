@@ -1,13 +1,14 @@
 package http
 
 import (
-	"github.com/itering/subscan/internal/service"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/itering/subscan/internal/service"
 
 	"github.com/go-kratos/kratos/pkg/conf/paladin"
 	bm "github.com/go-kratos/kratos/pkg/net/http/blademaster"
@@ -45,6 +46,7 @@ var testCases = []struct {
 	{"/api/scan/check_hash", strings.NewReader(`{"hash": "0xbadc6963e1add4d7a588e350d837579491d08bb270f02c56b3dd5f17018dee0c"}`), "POST"},
 	{"/api/scan/runtime/metadata", strings.NewReader(`{"spec": 1}`), "POST"},
 	{"/api/scan/runtime/list", nil, "POST"},
+	{"/api/scan/transfers", strings.NewReader(`{"row": 10, "page": 0}`), "POST"},
 	{"/api/now", nil, "POST"},
 	{"/api/system/status", nil, "GET"},
 	{"/ping", nil, "GET"},

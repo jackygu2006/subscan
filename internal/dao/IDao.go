@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+
 	"github.com/itering/subscan/model"
 	"github.com/itering/substrate-api-rpc/metadata"
 )
@@ -52,4 +53,5 @@ type IDao interface {
 	RuntimeVersionList() []model.RuntimeVersion
 	RuntimeVersionRaw(spec int) *metadata.RuntimeRaw
 	RuntimeVersionRecent() *model.RuntimeVersion
+	GetTransferExtrinsicsList(c context.Context, page, row int, optionalParams map[string]string) ([]*model.TransferJson, int)
 }

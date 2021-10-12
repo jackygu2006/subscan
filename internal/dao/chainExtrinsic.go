@@ -3,10 +3,11 @@ package dao
 import (
 	"context"
 	"encoding/json"
+	"strings"
+
 	"github.com/itering/subscan/model"
 	"github.com/itering/subscan/util"
 	"github.com/itering/subscan/util/address"
-	"strings"
 )
 
 func (d *Dao) CreateExtrinsic(c context.Context, txn *GormDB, extrinsic *model.ChainExtrinsic) error {

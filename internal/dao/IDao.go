@@ -53,5 +53,5 @@ type IDao interface {
 	RuntimeVersionList() []model.RuntimeVersion
 	RuntimeVersionRaw(spec int) *metadata.RuntimeRaw
 	RuntimeVersionRecent() *model.RuntimeVersion
-	GetTransferExtrinsicsList(c context.Context, page, row int, optionalParams map[string]string) ([]*model.TransferJson, int)
+	GetTransferExtrinsicsList(c context.Context, page, row int, optionalParams map[string]string) ([]model.TransferJson, int)
 }
